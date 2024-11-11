@@ -4,40 +4,41 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(MyApp3());
+  runApp(MyApp2());
 }
 
-class MyApp3 extends StatelessWidget {
-  const MyApp3({super.key});
+class MyApp2 extends StatelessWidget {
+  const MyApp2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage3(),
+      home: HomePage2(),
     );
   }
 }
 
-class HomePage3 extends StatefulWidget {
-  const HomePage3({super.key});
+class HomePage2 extends StatefulWidget {
+  const HomePage2({super.key});
 
   @override
-  State<HomePage3> createState() => _HomePage3State();
+  State<HomePage2> createState() => _HomePage2State();
 }
 
-class _HomePage3State extends State<HomePage3> {
+class _HomePage2State extends State<HomePage2> {
+  // membuat controller untuk mengambil isi dari text field
   TextEditingController nameController = TextEditingController();
   TextEditingController jobController = TextEditingController();
 
-  String hasilResponse = "Belum ada data";
+  String hasilResponse = "belum ada data";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text("HTTP Request PUT/PATCH"),
+          child: Text("HTTP Request POST"),
         ),
         backgroundColor: Colors.blue[200],
       ),
@@ -72,19 +73,8 @@ class _HomePage3State extends State<HomePage3> {
           ),
           ElevatedButton(
             onPressed: () async {
-              // menggunakan put
-              // var response = await http.put(
-              //   Uri.parse("https://reqres.in/api/users/2"),
-              //   body: {
-              //     // post body berupa text yang diambil dari controller
-              //     "name": nameController.text,
-              //     "job": jobController.text,
-              //   },
-              // );
-
-              // menggunakan patch
-              var response = await http.patch(
-                Uri.parse("https://reqres.in/api/users/2"),
+              var response = await http.post(
+                Uri.parse("https://reqres.in/api/users"),
                 body: {
                   // post body berupa text yang diambil dari controller
                   "name": nameController.text,
