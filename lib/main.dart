@@ -4,126 +4,102 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(MyApp());
+  runApp(MyApp2());
 }
 
-// cara menambahkan plugin
-/**
- * 1. install extension yang namanya pubspec assist
- * 2. pencet f1 lalu search "pubspec assist"
- * 3. ketik plugin yang ingin digunakan lalu enter
- * 4. setelah install selesai, import ke file yang membutuhkan
- */
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp2 extends StatelessWidget {
+  const MyApp2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: HomePage2(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage2 extends StatefulWidget {
+  const HomePage2({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage2> createState() => _HomePage2State();
 }
 
-class _HomePageState extends State<HomePage> {
-  late String body;
-  late String id;
-  late String email;
-  late String nama;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+class _HomePage2State extends State<HomePage2> {
+  // membuat controller untuk mengambil isi dari text field
+  TextEditingController nameController = TextEditingController();
+  TextEditingController jobController = TextEditingController();
 
-    body = "belum ada data";
-    id = "";
-    email = "";
-    nama = "";
-  }
+  String hasilResponse = "belum ada data";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text("HTTP Request GET"),
+          child: Text("HTTP Request POST"),
         ),
         backgroundColor: Colors.blue[200],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "id: $id",
-              style: TextStyle(
-                fontSize: 20,
-              ),
+      body: ListView(
+        padding: EdgeInsets.all(20),
+        children: [
+          TextField(
+            // memasang controller
+            controller: nameController,
+            autocorrect: false,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Name",
             ),
-            Text(
-              "email: $email",
-              style: TextStyle(
-                fontSize: 20,
-              ),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          TextField(
+            // memasang controller
+            controller: jobController,
+            autocorrect: false,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Job",
             ),
-            Text(
-              "nama: $nama",
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            ElevatedButton(
-              // fungsi bersifat asynchronous
-              onPressed: () async {
-                // sistem akan menunggu untuk mendapatkan data terlebih dahulu (menunggu fungsi get selesai)
-                var myResponse = await http.get(
-                  Uri.parse("https://reqres.in/api/users/5"),
-                );
-                // menampilkan data yang sudah didapatkan
-                // print(myResponse.headers);
-                // print(myResponse.statusCode);
-                // print(myResponse.body);
-
-                if (myResponse.statusCode == 200) {
-                  // berhasil get data
-                  print("Get data success");
-                  // mengubah hasil get ke dalam bentuk objek
-                  var data =
-                      json.decode(myResponse.body) as Map<String, dynamic>;
-                  // cetak data
-                  print(data["data"]);
-                  // memanggil fungsi setState untuk memperbarui state body
-                  setState(() {
-                    body = data["data"].toString();
-                    id = data["data"]["id"].toString();
-                    email = data["data"]["email"].toString();
-                    nama =
-                        "${data["data"]["first_name"]} ${data["data"]["last_name"]}";
-                  });
-                } else {
-                  // gagal get data
-                  print("Error ${myResponse.statusCode}");
-                  setState(() {
-                    body = "Error ${myResponse.statusCode}";
-                  });
-                }
-              },
-              child: Text("Get Data"),
-            ),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              var response = await http.post(
+                Uri.parse("https://reqres.in/api/users"),
+                body: {
+                  // post body berupa text yang diambil dari controller
+                  "name": nameController.text,
+                  "job": jobController.text,
+                },
+              );
+              print(response.body);
+              Map<String, dynamic> data =
+                  jsonDecode(response.body) as Map<String, dynamic>;
+              setState(() {
+                hasilResponse = "${data["name"]} - ${data["job"]}";
+              });
+            },
+            child: Text("Submit"),
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          // garis horizontal sebagai pembagi
+          Divider(),
+          SizedBox(
+            height: 10,
+          ),
+          Text(hasilResponse),
+        ],
       ),
     );
   }
