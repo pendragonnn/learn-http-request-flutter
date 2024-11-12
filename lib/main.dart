@@ -4,111 +4,78 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(MyApp3());
+  runApp(MyApp4());
 }
 
-class MyApp3 extends StatelessWidget {
-  const MyApp3({super.key});
+class MyApp4 extends StatelessWidget {
+  const MyApp4({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage3(),
+      home: HomePage4(),
     );
   }
 }
 
-class HomePage3 extends StatefulWidget {
-  const HomePage3({super.key});
+class HomePage4 extends StatefulWidget {
+  const HomePage4({super.key});
 
   @override
-  State<HomePage3> createState() => _HomePage3State();
+  State<HomePage4> createState() => _HomePage4State();
 }
 
-class _HomePage3State extends State<HomePage3> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController jobController = TextEditingController();
-
-  String hasilResponse = "Belum ada data";
+class _HomePage4State extends State<HomePage4> {
+  String data = "belum ada data";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text("HTTP Request PUT/PATCH"),
+          child: Text("HTTP Request Delete"),
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              var response = await http.get(
+                Uri.parse("https://reqres.in/api/users/2"),
+              );
+
+              Map<String, dynamic> myBody = json.decode(response.body);
+              setState(() {
+                data =
+                    "AKUN: ${myBody["data"]["first_name"]} ${myBody["data"]["last_name"]}";
+              });
+            },
+            icon: Icon(
+              Icons.get_app,
+            ),
+          ),
+        ],
         backgroundColor: Colors.blue[200],
       ),
       body: ListView(
         padding: EdgeInsets.all(20),
         children: [
-          TextField(
-            // memasang controller
-            controller: nameController,
-            autocorrect: false,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Name",
-            ),
-          ),
+          Text(data),
           SizedBox(
-            height: 15,
-          ),
-          TextField(
-            // memasang controller
-            controller: jobController,
-            autocorrect: false,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Job",
-            ),
-          ),
-          SizedBox(
-            height: 15,
+            height: 35,
           ),
           ElevatedButton(
             onPressed: () async {
-              // menggunakan put
-              // var response = await http.put(
-              //   Uri.parse("https://reqres.in/api/users/2"),
-              //   body: {
-              //     // post body berupa text yang diambil dari controller
-              //     "name": nameController.text,
-              //     "job": jobController.text,
-              //   },
-              // );
-
-              // menggunakan patch
-              var response = await http.patch(
+              var response = await http.delete(
                 Uri.parse("https://reqres.in/api/users/2"),
-                body: {
-                  // post body berupa text yang diambil dari controller
-                  "name": nameController.text,
-                  "job": jobController.text,
-                },
               );
-              print(response.body);
-              Map<String, dynamic> data =
-                  jsonDecode(response.body) as Map<String, dynamic>;
-              setState(() {
-                hasilResponse = "${data["name"]} - ${data["job"]}";
-              });
+              if (response.statusCode == 204) {
+                setState(() {
+                  data = "Berhasil menghapus data";
+                });
+              }
             },
-            child: Text("Submit"),
+            child: Text("Hapus"),
           ),
-          SizedBox(
-            height: 50,
-          ),
-          // garis horizontal sebagai pembagi
-          Divider(),
-          SizedBox(
-            height: 10,
-          ),
-          Text(hasilResponse),
         ],
       ),
     );
