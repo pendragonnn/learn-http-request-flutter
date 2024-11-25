@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_request_flutter/models/user.dart';
 
 void main() {
   runApp(MyApp5());
@@ -27,7 +28,7 @@ class HomePage5 extends StatefulWidget {
 }
 
 class _HomePage5State extends State<HomePage5> {
-  List<Map<String, dynamic>> allUser = [];
+  List<UserModel> allUser = [];
   Future getAllUser() async {
     try {
       var response = await http.get(
@@ -35,7 +36,7 @@ class _HomePage5State extends State<HomePage5> {
       );
       List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
       data.forEach((element) {
-        allUser.add(element);
+        allUser.add(UserModel.fromJson(element));
       });
 
       print(allUser);
@@ -81,16 +82,21 @@ class _HomePage5State extends State<HomePage5> {
               child: Text("Loading"),
             );
           } else {
+            if (allUser.length == 0) {
+              return Center(
+                child: Text("TIDAK ADA DAA"),
+              );
+            }
             return ListView.builder(
               itemCount: allUser.length,
               itemBuilder: (context, index) => ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey[500],
-                  backgroundImage: NetworkImage(allUser[index]['avatar']),
+                  backgroundImage: NetworkImage(allUser[index].avatar),
                 ),
                 title: Text(
-                    "${allUser[index]['first_name']} ${allUser[index]['last_name']}"),
-                subtitle: Text("${allUser[index]['email']}"),
+                    "${allUser[index].firstName} ${allUser[index].lastName}"),
+                subtitle: Text("${allUser[index].email}"),
               ),
             );
           }
